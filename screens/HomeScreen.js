@@ -1,11 +1,38 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useLayoutEffect } from "react";
+import { SafeAreaView, TouchableOpacity } from "react-native";
+import { StyleSheet, ScrollView, Text, View } from "react-native";
+import CustomListItems from "./components/CustomListItems";
+import { Avatar } from "react-native-elements";
+import { auth, db } from "../firebase";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
+  const signOutUser = () => {
+    auth.signOut().then(() => {
+      navigation.replace("Login");
+    });
+  };
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Signal",
+      headerStyle: { backgroundColor: "#fff" },
+      headerTitleStyle: { color: "black" },
+      headerTintColor: "black",
+      headerLeft: () => (
+        <View style={{ marginLeft: 20 }}>
+          <TouchableOpacity onPress={signOutUser} activeOpacity={0.5}>
+            <Avatar rounded source={{ uri: auth?.currentUser?.photoURL }} />
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, []);
+
   return (
-    <View>
-      <Text>This is the homepage</Text>
-    </View>
+    <SafeAreaView>
+      <ScrollView>
+        <CustomListItems />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
