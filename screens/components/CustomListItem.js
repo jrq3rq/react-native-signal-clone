@@ -2,28 +2,28 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
 
-const CustomListItems = ({ id, chatName, enterChat }) => {
+const CustomListItem = ({ id, chatName, enterChat }) => {
   return (
-    <ListItem>
+    <ListItem onPress={() => enterChat(id, chatName)} key={id} bottomDivider>
       <Avatar
         rounded
         source={{
           uri:
-            "https://indianapublicmedia.org/wpimages/amomentofscience/2014/10/amos_200_chimptraits.jpg",
+            "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
         }}
       />
       <ListItem.Content>
         <ListItem.Title style={{ fontWeight: "800" }}>
-          YouTube Chat
+          {chatName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
-          This is a test subtitle
+          ABC
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>
   );
 };
 
-export default CustomListItems;
+export default CustomListItem;
 
 const styles = StyleSheet.create({});
