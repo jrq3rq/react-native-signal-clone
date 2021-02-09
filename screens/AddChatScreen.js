@@ -16,7 +16,7 @@ const AddChatScreen = ({ navigation }) => {
 
   const createChat = async () => {
     await db
-      .collection("add")
+      .collection("adds")
       .add({
         chatName: input,
       })

@@ -16,7 +16,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = db.collection("add").onSnapshot((snapshot) => {
+    const unsubscribe = db.collection("adds").onSnapshot((snapshot) => {
       setChats(
         snapshot.docs.map((doc) => ({
           id: doc.id,
