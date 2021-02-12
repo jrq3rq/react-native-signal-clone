@@ -10,12 +10,11 @@ import {
 } from "react-native";
 import { useLayoutEffect } from "react";
 import { Avatar } from "react-native-elements";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native";
 import { TextInput } from "react-native";
-import { TouchableWithoutFeedback } from "react-native";
 import * as firebase from "firebase";
 import { db, auth } from "../firebase";
 
@@ -38,8 +37,9 @@ const ChatScreen = ({ navigation, route }) => {
           <Avatar
             rounded
             source={{
-              uri:
-                "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
+              uri: messages[0]?.data.photoURL,
+              // ||
+              // "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
             }}
           />
           <Text style={{ color: "white", marginLeft: 10, fontWeight: "700" }}>
@@ -73,10 +73,13 @@ const ChatScreen = ({ navigation, route }) => {
         </View>
       ),
     });
-  }, [navigation]);
-
+  }, [navigation, messages]);
+  //
+  //
+  //
   const sendMessage = () => {
     Keyboard.dismiss();
+
     db.collection("adds").doc(route.params.id).collection("messages").add({
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       message: input,
@@ -84,18 +87,21 @@ const ChatScreen = ({ navigation, route }) => {
       email: auth.currentUser.email,
       photoURL: auth.currentUser.photoURL,
     });
+
     setInput("");
   };
-
+  //
+  //
+  //
   useLayoutEffect(() => {
     const unsubscribe = db
       .collection("adds")
       .doc(route.params.id)
       .collection("messages")
       .orderBy("timestamp", "desc")
-      .onSnapshot((snapShot) =>
+      .onSnapshot((snapshot) =>
         setMessages(
-          snapShot.docs.map((doc) => ({
+          snapshot.docs.map((doc) => ({
             id: doc.id,
             data: doc.data(),
           }))
@@ -115,17 +121,20 @@ const ChatScreen = ({ navigation, route }) => {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <>
-            <ScrollView>
-              {messages.map(({ id, data }) => {
+            {/*  */}
+            <ScrollView contentContainerStyle={{ paddingTop: 15 }}>
+              {messages.map(({ id, data }) =>
                 data.email === auth.currentUser.email ? (
-                  <View style={styles.sender}>
-                    <Avatar />
-                    <Text style={styles.senderText}>{data.messages}</Text>
-                  </View>
-                ) : (
                   <View key={id} style={styles.reciever}>
                     <Avatar
+                      position="absolute"
                       rounded
+                      // for the WEB
+                      containerStyle={{
+                        position: "absolute",
+                        bottom: -15,
+                        right: -5,
+                      }}
                       bottom={-15}
                       right={-5}
                       size={30}
@@ -135,9 +144,31 @@ const ChatScreen = ({ navigation, route }) => {
                     />
                     <Text style={styles.recieverText}>{data.message}</Text>
                   </View>
-                );
-              })}
+                ) : (
+                  <View style={styles.sender}>
+                    <Avatar
+                      position="absolute"
+                      rounded
+                      // for the WEB
+                      containerStyle={{
+                        position: "absolute",
+                        bottom: -15,
+                        right: -5,
+                      }}
+                      bottom={-15}
+                      right={-5}
+                      size={30}
+                      source={{
+                        uri: data.photoURL,
+                      }}
+                    />
+                    <Text style={styles.senderText}>{data.message}</Text>
+                    <Text style={styles.senderName}>{data.displayName}</Text>
+                  </View>
+                )
+              )}
             </ScrollView>
+            {/*  */}
             <View style={styles.footer}>
               <TextInput
                 value={input}
@@ -181,6 +212,23 @@ const styles = StyleSheet.create({
     margin: 15,
     maxWidth: "80%",
     position: "relative",
+  },
+  senderName: {
+    left: 10,
+    paddingRight: 10,
+    fontSize: 10,
+    color: "white",
+  },
+  senderText: {
+    color: "white",
+    fontWeight: "500",
+    marginLeft: 10,
+    marginBottom: 15,
+  },
+  recieverText: {
+    color: "black",
+    fontWeight: "500",
+    marginLeft: 10,
   },
   footer: {
     flexDirection: "row",
